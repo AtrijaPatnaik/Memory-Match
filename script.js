@@ -2,7 +2,7 @@ const icons = [
   '🍎', '🍌', '🍇', '🍒', '🍓', '🍍', '🍑', '🥝',
   '🍉', '🥥', '🍈', '🍋', '🥑', '🍆', '🥕', '🌽',
   '🍔', '🍕', '🍩', '🍪', '🧁', '🍫', '🥨', '🧀'
-]; // Enough icons for all difficulty levels
+]; // Enough icons for all difficulties
 
 const gameBoard = document.getElementById('game-board');
 const movesDisplay = document.getElementById('moves');
@@ -12,9 +12,8 @@ const startGameButton = document.getElementById('start-game');
 let firstCard = null, secondCard = null;
 let moves = 0;
 let matchedPairs = 0;
-let gridSize, totalPairs;
+let totalPairs;
 
-// Handle game start based on difficulty
 startGameButton.addEventListener('click', () => {
   const difficulty = difficultySelect.value;
   initializeGame(difficulty);
@@ -22,35 +21,44 @@ startGameButton.addEventListener('click', () => {
 
 function initializeGame(difficulty) {
   resetGame();
-
+  
+  let rows, cols;
   if (difficulty === 'easy') {
-    gridSize = [4, 4]; // 4x4 grid = 8 pairs
+    rows = 4;
+    cols = 4; // 8 pairs
   } else if (difficulty === 'medium') {
-    gridSize = [6, 4]; // 6x4 grid = 12 pairs
+    rows = 6;
+    cols = 4; // 12 pairs
   } else {
-    gridSize = [6, 6]; // 6x6 grid = 18 pairs
+    rows = 6;
+    cols = 6; // 18 pairs
   }
 
-  totalPairs = (gridSize[0] * gridSize[1]) / 2;
+  totalPairs = (rows * cols) / 2;
   const selectedIcons = icons.slice(0, totalPairs);
-  let cards = [...selectedIcons, ...selectedIcons]; // Create pairs
+  let cards = [...selectedIcons, ...selectedIcons];
+  cards = cards.sort(() => 0.5 - Math.random()); // Shuffle
 
-  cards = cards.sort(() => 0.5 - Math.random()); // Shuffle cards
-
-  renderGameBoard(cards, gridSize);
+  renderGameBoard(cards, rows, cols);
 }
 
-function renderGameBoard(cards, gridSize) {
+function renderGameBoard(cards, rows, cols) {
   gameBoard.innerHTML = ''; // Clear previous board
 
-  gameBoard.style.gridTemplateColumns = `repeat(${gridSize[1]}, 1fr)`;
-  cards.forEach(icon => {
-    const card = document.createElement('div');
-    card.classList.add('col', 'card');
-    card.dataset.icon = icon;
-    card.addEventListener('click', flipCard);
-    gameBoard.appendChild(card);
-  });
+  let cardIndex = 0;
+  for (let i = 0; i < rows; i++) {
+    const row = document.createElement('div');
+    row.classList.add('row', 'justify-content-center', 'g-2');
+
+    for (let j = 0; j < cols; j++) {
+      const col = document.createElement('div');
+      col.classList.add('col', 'card', 'col-2'); // Ensure even spacing
+      col.dataset.icon = cards[cardIndex++];
+      col.addEventListener('click', flipCard);
+      row.appendChild(col);
+    }
+    gameBoard.appendChild(row);
+  }
 }
 
 function flipCard() {
