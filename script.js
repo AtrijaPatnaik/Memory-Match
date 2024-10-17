@@ -57,7 +57,7 @@ function checkMatch() {
       firstCard.textContent = '';
       secondCard.textContent = '';
       resetCards();
-    }, 1000);
+    }, 100);
   }
 }
 
