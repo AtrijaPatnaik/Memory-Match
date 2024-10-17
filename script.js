@@ -1,27 +1,57 @@
 const icons = [
   '🍎', '🍌', '🍇', '🍒', '🍓', '🍍', '🍑', '🥝',
   '🍉', '🥥', '🍈', '🍋', '🥑', '🍆', '🥕', '🌽',
-  '🍔', '🍕'
-]; // 18 unique icons
-let cards = [...icons, ...icons]; // Create 36 cards (18 pairs)
-let firstCard = null, secondCard = null;
-let moves = 0;
-let matchedPairs = 0;
+  '🍔', '🍕', '🍩', '🍪', '🧁', '🍫', '🥨', '🧀'
+]; // Enough icons for all difficulty levels
 
 const gameBoard = document.getElementById('game-board');
 const movesDisplay = document.getElementById('moves');
+const difficultySelect = document.getElementById('difficulty');
+const startGameButton = document.getElementById('start-game');
 
-// Shuffle the cards
-cards = cards.sort(() => 0.5 - Math.random());
+let firstCard = null, secondCard = null;
+let moves = 0;
+let matchedPairs = 0;
+let gridSize, totalPairs;
 
-// Create card elements
-cards.forEach(icon => {
-  const card = document.createElement('div');
-  card.classList.add('col', 'card');
-  card.dataset.icon = icon;
-  card.addEventListener('click', flipCard);
-  gameBoard.appendChild(card);
+// Handle game start based on difficulty
+startGameButton.addEventListener('click', () => {
+  const difficulty = difficultySelect.value;
+  initializeGame(difficulty);
 });
+
+function initializeGame(difficulty) {
+  resetGame();
+
+  if (difficulty === 'easy') {
+    gridSize = [4, 4]; // 4x4 grid = 8 pairs
+  } else if (difficulty === 'medium') {
+    gridSize = [6, 4]; // 6x4 grid = 12 pairs
+  } else {
+    gridSize = [6, 6]; // 6x6 grid = 18 pairs
+  }
+
+  totalPairs = (gridSize[0] * gridSize[1]) / 2;
+  const selectedIcons = icons.slice(0, totalPairs);
+  let cards = [...selectedIcons, ...selectedIcons]; // Create pairs
+
+  cards = cards.sort(() => 0.5 - Math.random()); // Shuffle cards
+
+  renderGameBoard(cards, gridSize);
+}
+
+function renderGameBoard(cards, gridSize) {
+  gameBoard.innerHTML = ''; // Clear previous board
+
+  gameBoard.style.gridTemplateColumns = `repeat(${gridSize[1]}, 1fr)`;
+  cards.forEach(icon => {
+    const card = document.createElement('div');
+    card.classList.add('col', 'card');
+    card.dataset.icon = icon;
+    card.addEventListener('click', flipCard);
+    gameBoard.appendChild(card);
+  });
+}
 
 function flipCard() {
   if (this === firstCard || this.classList.contains('flipped')) return;
@@ -47,7 +77,7 @@ function checkMatch() {
     secondCard.classList.add('hidden');
     resetCards();
 
-    if (matchedPairs === icons.length) {
+    if (matchedPairs === totalPairs) {
       setTimeout(() => alert('Congratulations! You matched all pairs!'), 300);
     }
   } else {
@@ -57,11 +87,18 @@ function checkMatch() {
       firstCard.textContent = '';
       secondCard.textContent = '';
       resetCards();
-    }, 100);
+    }, 1000);
   }
 }
 
 function resetCards() {
   firstCard = null;
   secondCard = null;
+}
+
+function resetGame() {
+  moves = 0;
+  matchedPairs = 0;
+  movesDisplay.textContent = 'Moves: 0';
+  gameBoard.innerHTML = '';
 }
