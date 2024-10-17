@@ -1,8 +1,9 @@
 const icons = [
   '🍎', '🍌', '🍇', '🍒', '🍓', '🍍', '🍑', '🥝',
-  '🍉', '🥥', '🍈', '🍋', '🥑', '🍆', '🥕', '🌽'
-];
-let cards = [...icons, ...icons]; // Create 32 cards (16 pairs)
+  '🍉', '🥥', '🍈', '🍋', '🥑', '🍆', '🥕', '🌽',
+  '🍔', '🍕'
+]; // 18 unique icons
+let cards = [...icons, ...icons]; // Create 36 cards (18 pairs)
 let firstCard = null, secondCard = null;
 let moves = 0;
 let matchedPairs = 0;
